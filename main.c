@@ -34,10 +34,11 @@ void imprimirJogadores(Jogador *head, Jogador *tail);
 void iniciarCartas(Jogador *jogadorHead, Jogador *jogadorTail);
 void imprimirCartasTotal(Jogador *jogadorHead, Jogador *jogadorTail);
 void bubbleSort(Jogador *jogadorHead, Jogador *jogadorTail);
+void mostrarMenu();
 
 int main() {
     srand(time(NULL));
-    
+    mostrarMenu();
     //Iniciando Tabuleiro
     Espaco *tabuleiroHead = iniciarTabuleiro();
 
@@ -245,3 +246,12 @@ void imprimirTabuleiroByLocal(Espaco *head) {
     printf("\n");
 }
 
+void mostrarMenu() {
+    printf("Menu Principal\n");
+    printf("1. Iniciar Jogo\n");
+    printf("2. Fazer um Palpite\n");
+    printf("3. Mover no Tabuleiro\n");
+    printf("4. Ver Regras\n");
+    printf("5. Sair\n");
+    printf("Escolha uma opção: ");
+};
