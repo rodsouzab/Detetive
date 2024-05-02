@@ -6,38 +6,43 @@
 
 typedef struct Carta{
     int id;
-    char nome[30];  // Supondo um tamanho máximo de 30 caracteres.
+    char nome[30];  
 } Carta;
 
 typedef struct Espaco {
     int id;
     struct Espaco *ant;
     struct Espaco *prox;
-    char local[30];  // Supondo um tamanho máximo de 30 caracteres.
+    char local[35];  
 } Espaco;
 
 typedef struct Jogador {
     int id;
     struct Jogador *prox;
-    Espaco *espaco;  // Deveria ser um ponteiro para Espaco.
-    Carta cartas[5];  // Definindo um número fixo de cartas, por exemplo.
+    Espaco *espaco;  
+    Carta cartas[5];  
 } Jogador;
 
 
 Espaco *iniciarTabuleiro();
-Jogador *iniciarJogadores(Jogador **head, Jogador **tail);
+void *iniciarJogadores(Jogador **head, Jogador **tail);
 void inserirEspaco(Espaco **espaco, int id);
 void imprimirTabuleiroById(Espaco *head);
 void imprimirTabuleiroByLocal(Espaco *head);
 void inserirJogador(Jogador **head, Jogador **tail, int id);
 void imprimirJogadores(Jogador *head, Jogador *tail);
+void iniciarCartas(Jogador *jogadorHead, Jogador *jogadorTail);
+void imprimirCartasTotal(Jogador *jogadorHead, Jogador *jogadorTail);
+void bubbleSort(Jogador *jogadorHead, Jogador *jogadorTail);
 
 int main() {
+    srand(time(NULL));
+    
     //Iniciando Tabuleiro
     Espaco *tabuleiroHead = iniciarTabuleiro();
 
-    printf("Tabuleiro: ");
-    imprimirTabuleiroByLocal(tabuleiroHead);
+    //printf("Tabuleiro: ");
+    //imprimirTabuleiroByLocal(tabuleiroHead);
 
     printf("\n");
 
@@ -45,16 +50,94 @@ int main() {
     Jogador *jogadorHead = NULL;
     Jogador *jogadorTail = NULL;
 
-    
     iniciarJogadores(&jogadorHead,&jogadorTail);
 
-    printf("Jogadores: ");
-    imprimirJogadores(jogadorHead,jogadorTail);
+    //printf("Jogadores: ");
+    //imprimirJogadores(jogadorHead,jogadorTail);
+
+    iniciarCartas(jogadorHead, jogadorTail);
     
+    imprimirCartasTotal(jogadorHead,jogadorTail);
 
 }
 
-Jogador *iniciarJogadores(Jogador **head, Jogador **tail) {
+void iniciarCartas(Jogador *jogadorHead, Jogador *jogadorTail) {
+    FILE* arquivo = fopen("cartas.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo de cartas.\n");
+        return;
+    }
+    
+    char buffer[100];
+    int id = 0;
+    Carta cartas[20];
+    
+    // Inicializar as cartas
+    while (fgets(buffer, 100, arquivo) != NULL && id < 20) {
+        cartas[id].id = id;
+        strcpy(cartas[id].nome, buffer);
+        id++;
+    }
+    fclose(arquivo);
+
+    Jogador *aux = jogadorHead; // Usar o ponteiro auxiliar
+
+    do {
+        int countDeck = 0;
+        while (countDeck < 5) {
+            int random = rand() % 20;
+
+            if (strlen(cartas[random].nome) != 0) {
+                aux->cartas[countDeck] = cartas[random];
+                strcpy(cartas[random].nome, "");
+                countDeck++;
+            }
+        }
+        aux = aux->prox; // Avançar para o próximo jogador usando o ponteiro auxiliar
+    } while (aux != jogadorTail->prox);
+
+    aux = jogadorHead;
+
+    bubbleSort(aux, jogadorTail);
+}
+
+void bubbleSort(Jogador *jogadorHead, Jogador *jogadorTail) {
+    do {
+        for (int n = 1; n <= 5; n++) {
+            for (int j = 0; j < 4; j++) {
+                if (jogadorHead->cartas[j].id > jogadorHead->cartas[j+1].id) {
+                    // Troca os elementos se estiverem fora de ordem
+                    Carta aux = jogadorHead->cartas[j];
+                    jogadorHead->cartas[j] = jogadorHead->cartas[j+1];
+                    jogadorHead->cartas[j+1] = aux;
+                }
+            }
+        }
+        jogadorHead = jogadorHead->prox;
+    } while (jogadorHead != jogadorTail->prox);
+
+}
+
+
+
+void imprimirCartasTotal(Jogador *jogadorHead, Jogador *jogadorTail) {
+    Jogador *aux = jogadorHead;
+
+
+    do  {
+        printf("Jogador %d:\n",(aux->id) + 1);
+        
+        for (int i = 0; i < 5; i++) {
+            printf("Carta %d: %s\n", i + 1, aux->cartas[i].nome);
+        }
+        
+        printf("\n");
+        
+        aux = aux->prox;
+    } while (aux != jogadorTail->prox);
+}
+
+void *iniciarJogadores(Jogador **head, Jogador **tail) {
     for (int i = 3; i >= 0; i--) {
         inserirJogador(&(*head),&(*tail),i);
     }
@@ -71,7 +154,7 @@ Espaco *iniciarTabuleiro() {
             case 7:
                 strcpy(espaco->local, "Mansão");
                 break;
-            case 13:
+            case 12:
                 strcpy(espaco->local, "Prefeitura");
                 break;
             case 18:
@@ -80,10 +163,13 @@ Espaco *iniciarTabuleiro() {
             case 22:
                 strcpy(espaco->local, "Praia");
                 break;
-            case 26:
-                strcpy(espaco->local, "Ponte");
+            case 25:
+                strcpy(espaco->local, "Escola");
                 break;
             case 29:
+                strcpy(espaco->local, "Ponte");
+                break;
+            case 34:
                 strcpy(espaco->local, "Ponto de Ônibus");
                 break;
             default:

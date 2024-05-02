@@ -1,0 +1,20 @@
+Prefeito
+Policial
+Professor
+Médico
+Advogado
+Delegado
+Faca
+Pé-de-cabra
+Espada
+Veneno
+Martelo
+Arma de Fogo
+Metrô
+Mansão
+Prefeitura
+Parque
+Praia
+Escola
+Ponte
+Ponto de Ônibus
