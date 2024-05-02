@@ -6,22 +6,23 @@
 
 typedef struct Carta{
     int id;
-    char nome[];
+    char nome[30];  // Supondo um tamanho máximo de 30 caracteres.
 } Carta;
 
 typedef struct Espaco {
     int id;
     struct Espaco *ant;
     struct Espaco *prox;
-    char local[];
+    char local[30];  // Supondo um tamanho máximo de 30 caracteres.
 } Espaco;
 
-typedef struct Jogador{
+typedef struct Jogador {
     int id;
     struct Jogador *prox;
-    Espaco espaco;
-    Carta cartas[];
+    Espaco *espaco;  // Deveria ser um ponteiro para Espaco.
+    Carta cartas[5];  // Definindo um número fixo de cartas, por exemplo.
 } Jogador;
+
 
 Espaco *iniciarTabuleiro();
 Jogador *iniciarJogadores(Jogador **head, Jogador **tail);
@@ -110,16 +111,16 @@ void inserirJogador(Jogador **head, Jogador **tail, int id) {
 
 void inserirEspaco(Espaco **espaco, int id) {
     Espaco *novo = (Espaco*)malloc(sizeof(Espaco));  
-    if (novo != NULL){
+    if (novo != NULL) {
         novo->id = id;    
         novo->prox = *espaco;
         novo->ant = NULL;
         
-        if(*espaco!=NULL){
-        (*espaco)->ant = novo;
-        }    
+        if (*espaco != NULL) {
+            (*espaco)->ant = novo;
+        }
         *espaco = novo;
-    } 
+    }
 }
 
 void imprimirJogadores(Jogador *head, Jogador *tail) { 
