@@ -25,9 +25,13 @@ Bubble Sort: Utilizado para ordenar as cartas de suspeitos, locais ou armas dura
 
 # Principais funções a serem utilizadas
 Inicialização do Jogo: Criar funções para inicializar o jogo, distribuir cartas e preparar o tabuleiro.
+
 Movimento: Implementar a lógica para mover os jogadores pelo tabuleiro. Isso pode envolver alterar o índice do espaço do jogador na lista do tabuleiro.
+
 Palpites: Desenvolver o mecanismo para que os jogadores façam palpites sobre as cartas dos outros jogadores quando chegam em uma nova localização do tabuleiro.
+
 Checagem de Palpite: Desenvolver lógica que percorra a lista de jogadores e verifique qual tem uma carta referente no palpite em questão, esse poderá selecionar qual carta quer mostrar para o detetive que fez o palpite (se houver mais de uma).
+
 Checagem de Palpite Final: Implementar a verificação do palpite final de um jogador e determinar se ele ganhou ou foi eliminado.
 
 # Referências Bibliográficas
