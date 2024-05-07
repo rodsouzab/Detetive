@@ -27,18 +27,20 @@ typedef struct Jogador {
 
 
 Espaco *iniciarTabuleiro();
-void *iniciarJogadores(Jogador **head, Jogador **tail);
+void *iniciarJogadores(Jogador **head, Jogador **tail, Espaco *espaco);
 void inserirEspaco(Espaco **espaco, int id);
 void imprimirTabuleiroById(Espaco *head);
 void imprimirTabuleiroByLocal(Espaco *head);
-void inserirJogador(Jogador **head, Jogador **tail, int id);
-void imprimirJogadores(Jogador *head, Jogador *tail);
+void inserirJogador(Jogador **head, Jogador **tail, int id, Espaco *espaaco);
+void imprimirJogadoresbyLocal(Jogador *head, Jogador *tail);
+void imprimirJogadoresbyId(Jogador *head, Jogador *tail);
 void iniciarCartas(Jogador *jogadorHead, Jogador *jogadorTail);
 void imprimirCartasTotal(Jogador *jogadorHead, Jogador *jogadorTail);
 void bubbleSort(Jogador *jogadorHead, Jogador *jogadorTail);
 void mostrarMenuPrevio();
 void clearScreen();
 void lerRegras();
+Espaco *buscaEspaco(Espaco *espaco, int id);
 
 int main() {
     srand(time(NULL));
@@ -68,11 +70,12 @@ int main() {
 
     //Iniciando Jogo
     Espaco *tabuleiroHead = iniciarTabuleiro();
+    Espaco *espacoInicial = buscaEspaco(tabuleiroHead, 18);
     Jogador *jogadorHead = NULL;
     Jogador *jogadorTail = NULL;
-    iniciarJogadores(&jogadorHead,&jogadorTail);
+    iniciarJogadores(&jogadorHead,&jogadorTail,espacoInicial);
     iniciarCartas(jogadorHead, jogadorTail);
-
+    
     clearScreen();
 
     printf("Iniciando Jogo...\n");
@@ -81,9 +84,18 @@ int main() {
     clearScreen();
 
     //Teste de Impressão
-    imprimirCartasTotal(jogadorHead,jogadorTail);
+    imprimirJogadoresbyLocal(jogadorHead,jogadorTail);
+    imprimirJogadoresbyId(jogadorHead,jogadorTail);
         
     
+}
+
+Espaco *buscaEspaco(Espaco *espaco, int id) {
+    if (espaco != NULL) {
+        while(espaco->id != id)
+            espaco = espaco->prox;
+        return espaco;
+    }
 }
 
 void iniciarCartas(Jogador *jogadorHead, Jogador *jogadorTail) {
@@ -163,9 +175,9 @@ void imprimirCartasTotal(Jogador *jogadorHead, Jogador *jogadorTail) {
     } while (aux != jogadorTail->prox);
 }
 
-void *iniciarJogadores(Jogador **head, Jogador **tail) {
+void *iniciarJogadores(Jogador **head, Jogador **tail, Espaco *espaco) {
     for (int i = 3; i >= 0; i--) {
-        inserirJogador(&(*head),&(*tail),i);
+        inserirJogador(&(*head),&(*tail),i, espaco);
     }
 }
 
@@ -207,10 +219,11 @@ Espaco *iniciarTabuleiro() {
     return espaco;
 }
 
-void inserirJogador(Jogador **head, Jogador **tail, int id) {
+void inserirJogador(Jogador **head, Jogador **tail, int id, Espaco *espaco) {
   Jogador *novo = (Jogador *) malloc(sizeof(Jogador));
   if(novo != NULL){
-    novo->id = id;    
+    novo->id = id;  
+    novo->espaco = espaco;  
     if(*head==NULL){
       *head = *tail = novo;
     }else{
@@ -235,7 +248,18 @@ void inserirEspaco(Espaco **espaco, int id) {
     }
 }
 
-void imprimirJogadores(Jogador *head, Jogador *tail) { 
+void imprimirJogadoresbyLocal(Jogador *head, Jogador *tail) { 
+  if(head != NULL){  
+    do{
+      printf("-> %s ",head->espaco->local);
+      head = head->prox;
+    }while(head != tail->prox);
+    printf("->");
+  }
+  printf("\n");
+}
+
+void imprimirJogadoresbyId(Jogador *head, Jogador *tail) { 
   if(head != NULL){  
     do{
       printf("-> %d ",head->id);
