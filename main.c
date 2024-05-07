@@ -75,13 +75,13 @@ int main() {
 
     clearScreen();
 
-    printf("Iniciando Jogo...");
+    printf("Iniciando Jogo...\n");
     sleep(4);
 
     clearScreen();
 
     //Teste de Impressão
-    imprimirTabuleiroByLocal(tabuleiroHead);
+    imprimirCartasTotal(jogadorHead,jogadorTail);
         
     
 }
