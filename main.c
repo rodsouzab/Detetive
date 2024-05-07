@@ -295,9 +295,11 @@ void imprimirTabuleiroByLocal(Espaco *head) {
     printf("\n");
 }
 
+#include <stdio.h>
+
 void mostrarMenuPrevio() {
     printf("\n=============================\n");
-    printf("         DETETIVE       \n");
+    printf("       🔍 DETETIVE 🔍\n");
     printf("=============================\n");
     printf("1. Iniciar Jogo\n");
     printf("2. Ver Regras\n");
