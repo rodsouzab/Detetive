@@ -41,6 +41,7 @@ void mostrarMenuPrevio();
 void clearScreen();
 void lerRegras();
 int jogarDado();
+void moverJogador(Jogador *jogador, int resultadoDado);
 Espaco *buscaEspaco(Espaco *espaco, int id);
 
 int main() {
@@ -78,7 +79,7 @@ int main() {
     iniciarCartas(jogadorHead, jogadorTail);
     
     clearScreen();
-    //essa parte de baixo pode apagar foi só um teste pra ver se tava funcionando
+    //essa parte de baixo pode apagar foi só um teste pra ver se o dado tava funcionando
     printf("Jogando o dado... \n");
     int resultadoDado = jogarDado();
     printf("Resultado do dado: %d\n", resultadoDado);
@@ -300,15 +301,13 @@ void imprimirTabuleiroByLocal(Espaco *head) {
     printf("\n");
 }
 
-#include <stdio.h>
-
 void mostrarMenuPrevio() {
     printf("\n=============================\n");
-    printf("       🔍 DETETIVE 🔍\n");
+    printf("        DETETIVE 🔍\n");
     printf("=============================\n");
-    printf("1. Iniciar Jogo\n");
-    printf("2. Ver Regras\n");
-    printf("3. Sair\n");
+    printf("1. 🕵️ Iniciar Jogo\n");
+    printf("2. 📜 Ver Regras\n");
+    printf("3. 🚪 Sair\n");
     printf("=============================\n");
     printf("Escolha uma opção: ");
 };
@@ -346,4 +345,12 @@ void lerRegras() {
 
 int jogarDado() {
     return rand() % 6 + 1; 
+}
+
+
+void moverJogador(Jogador *jogador, int resultadoDado) {
+    for (int i = 0; i < resultadoDado; i++) {
+        jogador->espaco = jogador->espaco->prox;
+    }
+    printf("Jogador %d moveu para %s\n", jogador->id, jogador->espaco->local);
 }
