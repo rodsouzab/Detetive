@@ -40,6 +40,7 @@ void bubbleSort(Jogador *jogadorHead, Jogador *jogadorTail);
 void mostrarMenuPrevio();
 void clearScreen();
 void lerRegras();
+int jogarDado();
 Espaco *buscaEspaco(Espaco *espaco, int id);
 
 int main() {
@@ -77,10 +78,14 @@ int main() {
     iniciarCartas(jogadorHead, jogadorTail);
     
     clearScreen();
+    //essa parte de baixo pode apagar foi só um teste pra ver se tava funcionando
+    printf("Jogando o dado... \n");
+    int resultadoDado = jogarDado();
+    printf("Resultado do dado: %d\n", resultadoDado);
 
     printf("Iniciando Jogo...\n");
     sleep(4);
-
+    
     clearScreen();
 
     //Teste de Impressão
@@ -336,4 +341,9 @@ void lerRegras() {
         scanf("%d", &c);
     }
     fclose(arquivo);
+}
+
+
+int jogarDado() {
+    return rand() % 6 + 1; 
 }
