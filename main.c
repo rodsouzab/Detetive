@@ -2,40 +2,47 @@
 #include <stdio.h>
 #include <string.h>
 #include <time.h>
-#include <math.h>
 #include <unistd.h>
 
-typedef struct Carta{
+// Definições de cores ANSI
+#define RED "\x1B[31m"
+#define GREEN "\x1B[32m"
+#define YELLOW "\x1B[33m"
+#define BLUE "\x1B[34m"
+#define MAGENTA "\x1B[35m"
+#define CYAN "\x1B[36m"
+#define RESET "\x1B[0m"
+
+void printColor(const char* color, const char* text) {
+    printf("%s%s\033[0m", color, text); // Reseta a cor após a impressão
+}
+
+typedef struct Carta {
     int id;
-    char nome[30];  
+    char nome[30];
 } Carta;
 
 typedef struct Espaco {
     int id;
     struct Espaco *ant;
     struct Espaco *prox;
-    char local[35];  
+    char local[35];
 } Espaco;
 
 typedef struct Jogador {
     int id;
     struct Jogador *prox;
-    Espaco *espaco;  
-    Carta cartas[5];  
+    Espaco *espaco;
+    Carta cartas[5];
 } Jogador;
-
-
 
 Espaco *iniciarTabuleiro();
 void *iniciarJogadores(Jogador **head, Jogador **tail, Espaco *espaco);
 void inserirEspaco(Espaco **espaco, int id);
-void imprimirTabuleiroById(Espaco *head);
 void imprimirTabuleiroByLocal(Espaco *head);
-void inserirJogador(Jogador **head, Jogador **tail, int id, Espaco *espaaco);
+void inserirJogador(Jogador **head, Jogador **tail, int id, Espaco *espaco);
 void imprimirJogadoresbyLocal(Jogador *head, Jogador *tail);
-void imprimirJogadoresbyId(Jogador *head, Jogador *tail);
 void iniciarCartas(Jogador *jogadorHead, Jogador *jogadorTail);
-void imprimirCartasTotal(Jogador *jogadorHead, Jogador *jogadorTail);
 void bubbleSort(Jogador *jogadorHead, Jogador *jogadorTail);
 void mostrarMenuPrevio();
 void clearScreen();
@@ -47,9 +54,9 @@ Espaco *buscaEspaco(Espaco *espaco, int id);
 int main() {
     srand(time(NULL));
     clearScreen();
-    
+
     int comando = 0;
-    
+
     while (comando != 1) {
         mostrarMenuPrevio();
         scanf("%d", &comando);
@@ -67,33 +74,29 @@ int main() {
                 clearScreen();
                 printf("\n\nComando Inválido, tente novamente.\n\n");
                 break;
-            }
+        }
     }
 
-    //Iniciando Jogo
     Espaco *tabuleiroHead = iniciarTabuleiro();
     Espaco *espacoInicial = buscaEspaco(tabuleiroHead, 18);
     Jogador *jogadorHead = NULL;
     Jogador *jogadorTail = NULL;
     iniciarJogadores(&jogadorHead,&jogadorTail,espacoInicial);
     iniciarCartas(jogadorHead, jogadorTail);
-    
+
     clearScreen();
-    //essa parte de baixo pode apagar foi só um teste pra ver se o dado tava funcionando
+
     printf("Jogando o dado... \n");
     int resultadoDado = jogarDado();
     printf("Resultado do dado: %d\n", resultadoDado);
 
     printf("Iniciando Jogo...\n");
     sleep(4);
-    
+
     clearScreen();
 
-    //Teste de Impressão
     imprimirJogadoresbyLocal(jogadorHead,jogadorTail);
-    imprimirJogadoresbyId(jogadorHead,jogadorTail);
-        
-    
+
 }
 
 Espaco *buscaEspaco(Espaco *espaco, int id) {
@@ -102,6 +105,7 @@ Espaco *buscaEspaco(Espaco *espaco, int id) {
             espaco = espaco->prox;
         return espaco;
     }
+    return NULL;
 }
 
 void iniciarCartas(Jogador *jogadorHead, Jogador *jogadorTail) {
@@ -110,12 +114,11 @@ void iniciarCartas(Jogador *jogadorHead, Jogador *jogadorTail) {
         printf("Erro ao abrir o arquivo de cartas.\n");
         return;
     }
-    
+
     char buffer[100];
     int id = 0;
     Carta cartas[20];
-    
-    // Inicializar as cartas
+
     while (fgets(buffer, 100, arquivo) != NULL && id < 20) {
         cartas[id].id = id;
         strcpy(cartas[id].nome, buffer);
@@ -149,7 +152,6 @@ void bubbleSort(Jogador *jogadorHead, Jogador *jogadorTail) {
         for (int n = 1; n <= 5; n++) {
             for (int j = 0; j < 4; j++) {
                 if (jogadorHead->cartas[j].id > jogadorHead->cartas[j+1].id) {
-                    // Troca os elementos se estiverem fora de ordem
                     Carta aux = jogadorHead->cartas[j];
                     jogadorHead->cartas[j] = jogadorHead->cartas[j+1];
                     jogadorHead->cartas[j+1] = aux;
@@ -158,39 +160,18 @@ void bubbleSort(Jogador *jogadorHead, Jogador *jogadorTail) {
         }
         jogadorHead = jogadorHead->prox;
     } while (jogadorHead != jogadorTail->prox);
-    
-
-}
-
-
-
-void imprimirCartasTotal(Jogador *jogadorHead, Jogador *jogadorTail) {
-    Jogador *aux = jogadorHead;
-
-
-    do  {
-        printf("Jogador %d:\n",(aux->id) + 1);
-        
-        for (int i = 0; i < 5; i++) {
-            printf("Carta %d: %s\n", i + 1, aux->cartas[i].nome);
-        }
-        
-        printf("\n");
-        
-        aux = aux->prox;
-    } while (aux != jogadorTail->prox);
 }
 
 void *iniciarJogadores(Jogador **head, Jogador **tail, Espaco *espaco) {
     for (int i = 3; i >= 0; i--) {
-        inserirJogador(&(*head),&(*tail),i, espaco);
+        inserirJogador(&(*head), &(*tail), i, espaco);
     }
 }
 
 Espaco *iniciarTabuleiro() {
     Espaco *espaco = NULL;
     for (int i = 29; i >= 0; i--) {
-        inserirEspaco(&espaco,i);
+        inserirEspaco(&espaco, i);
         switch (espaco->id){
             case 0:
                 strcpy(espaco->local, "Metrô");
@@ -221,18 +202,17 @@ Espaco *iniciarTabuleiro() {
                 break;
         }
     }
-
     return espaco;
 }
 
 void inserirJogador(Jogador **head, Jogador **tail, int id, Espaco *espaco) {
   Jogador *novo = (Jogador *) malloc(sizeof(Jogador));
-  if(novo != NULL){
-    novo->id = id;  
-    novo->espaco = espaco;  
-    if(*head==NULL){
+  if (novo != NULL) {
+    novo->id = id;
+    novo->espaco = espaco;
+    if (*head == NULL) {
       *head = *tail = novo;
-    }else{
+    } else {
       novo->prox = *head;
       *head = novo;
     }
@@ -241,12 +221,12 @@ void inserirJogador(Jogador **head, Jogador **tail, int id, Espaco *espaco) {
 }
 
 void inserirEspaco(Espaco **espaco, int id) {
-    Espaco *novo = (Espaco*)malloc(sizeof(Espaco));  
+    Espaco *novo = (Espaco*)malloc(sizeof(Espaco));
     if (novo != NULL) {
-        novo->id = id;    
+        novo->id = id;
         novo->prox = *espaco;
         novo->ant = NULL;
-        
+
         if (*espaco != NULL) {
             (*espaco)->ant = novo;
         }
@@ -254,99 +234,78 @@ void inserirEspaco(Espaco **espaco, int id) {
     }
 }
 
-void imprimirJogadoresbyLocal(Jogador *head, Jogador *tail) { 
-  if(head != NULL){  
-    do{
-      printf("-> %s ",head->espaco->local);
-      head = head->prox;
-    }while(head != tail->prox);
-    printf("->");
-  }
-  printf("\n");
-}
-
-void imprimirJogadoresbyId(Jogador *head, Jogador *tail) { 
-  if(head != NULL){  
-    do{
-      printf("-> %d ",head->id);
-      head = head->prox;
-    }while(head != tail->prox);
-    printf("->");
-  }
-  printf("\n");
-}
-
-void imprimirTabuleiroById(Espaco *head) {
-    while(head != NULL) {
-      printf("%d",head->id);
-      if (head->id != 29)
-        printf(" <=>");
-      head = head->prox;
-    }
+void imprimirJogadoresbyLocal(Jogador *head, Jogador *tail) {
+    Jogador *current = head;
+    printf("\nJogadores no jogo:\n");
+    printf("ID\tPosição\t\tCartas\n");
+    do {
+        printf("%d\t%s\t\t", current->id, current->espaco->local);
+        for (int i = 0; i < 5; i++) {
+            printColor(GREEN, current->cartas[i].nome);
+            if (i < 4) printf(", ");
+        }
+        printf("\n");
+        current = current->prox;
+    } while (current != tail->prox);
     printf("\n");
 }
 
 void imprimirTabuleiroByLocal(Espaco *head) {
-    while(head != NULL) {
-        if (strcmp(head->local,"\0") == 0) {
-            printf("NULL");
+    Espaco *current = head;
+    printf(CYAN "\n---------------------------------------------\n" RESET);
+    while (current != NULL) {
+        printf("| " YELLOW "%s" RESET " ", current->local);
+        current = current->prox;
+        if (current != NULL) {
+            printf(" <=> ");
         }
-        else {
-            printf("%s",head->local);
-        }
-        if (head->id != 29)
-        printf(" <=> ");
-        head = head->prox;
     }
-    printf("\n");
+    printf("|\n---------------------------------------------\n");
 }
 
 void mostrarMenuPrevio() {
-    printf("\n=============================\n");
-    printf("        DETETIVE 🔍\n");
-    printf("=============================\n");
+    printf(GREEN "\n=============================\n" RESET);
+    printf(MAGENTA "        DETETIVE 🔍\n" RESET);
+    printf(GREEN "=============================\n" RESET);
     printf("1. 🕵️ Iniciar Jogo\n");
     printf("2. 📜 Ver Regras\n");
     printf("3. 🚪 Sair\n");
-    printf("=============================\n");
+    printf(GREEN "=============================\n" RESET);
     printf("Escolha uma opção: ");
-};
+}
 
 void clearScreen() {
-    printf("\033[2J\033[H"); 
+    printf("\033[2J\033[H"); // Limpa a tela e move o cursor para o topo
 }
 
 void lerRegras() {
-    FILE* arquivo = fopen("regras.txt", "r");
+    FILE *arquivo = fopen("regras.txt", "r");
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo de regras.\n");
         return;
     }
 
     clearScreen();
-    
+
     char buffer[500];
     while (fgets(buffer, 500, arquivo) != NULL) {
         printf("%s", buffer);
     }
-    
+
     printf("\n");
     int c = 0;
 
     while (c != 1) {
-        printf("\n");
-        printf("Digite '1' para continuar:");
+        printf("\nDigite '1' para continuar:");
         printf("\n");
         scanf("%d", &c);
     }
     fclose(arquivo);
 }
 
-
 int jogarDado() {
-    return rand() % 6 + 1; 
+    return rand() % 6 + 1; // Gera um número entre 1 e 6
 }
-
 
 void moverJogador(Jogador *jogador, int resultadoDado) {
     for (int i = 0; i < resultadoDado; i++) {
