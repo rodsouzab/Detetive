@@ -44,7 +44,7 @@ void inserirEspaco(Espaco **espaco, int id);
 void imprimirTabuleiroByLocal(Espaco *head);
 void inserirJogador(Jogador **head, Jogador **tail, int id, Espaco *espaco);
 void imprimirJogadoresbyLocal(Jogador *head, Jogador *tail);
-void iniciarCartas(Jogador *jogadorHead, Jogador *jogadorTail);
+void iniciarCartas(Jogador *jogadorHead, Jogador *jogadorTail, Carta final[3]);
 void bubbleSort(Jogador *jogadorHead, Jogador *jogadorTail);
 void mostrarMenuPrevio();
 void clearScreen();
@@ -96,8 +96,8 @@ void loopJogo() {
     Jogador *jogadorHead = NULL;
     Jogador *jogadorTail = NULL;
     iniciarJogadores(&jogadorHead,&jogadorTail,espacoInicial);
-    iniciarCartas(jogadorHead, jogadorTail);
-
+    Carta final[3];
+    iniciarCartas(jogadorHead, jogadorTail, final);
 
     clearScreen();
 
@@ -126,7 +126,6 @@ void loopJogo() {
         int resultadoDado; 
         switch (comando) {
             case 1:
-                
                 resultadoDado = jogarDado();
                 printf("\n\nO resultado do dado foi %d", resultadoDado);
                 comando = 0;
@@ -242,11 +241,16 @@ void conferirPalpite(Jogador *jogadorAtual, int idAssassino, int idArma, int idL
 
     clearScreen();
 
+    printf("Conferindo palpite...");
+    sleep(2);
+
+    clearScreen();
+
     if (c == 0) {
         printf("Nenhum palpite foi confirmado.\n");
         int comando = 0;
         while (comando != 1) {
-                    printf("Digite '1' para continuar\n");
+                    printf("Digite '1' para começar\n");
                     printf("\n");
                     scanf("%d", &comando);
                 }
@@ -269,7 +273,7 @@ void conferirPalpite(Jogador *jogadorAtual, int idAssassino, int idArma, int idL
 
         int escolha = 0;
         while (escolha < 1 || escolha > c) {
-            printf("Selecione que carta mostrar ao Jogador %d:\n",(jogadorAtual->id)+1);
+            printf("\n\nSelecione que carta mostrar ao Jogador %d:\n",(jogadorAtual->id)+1);
             scanf("%d",&escolha);
         }
         clearScreen();
@@ -285,7 +289,7 @@ void conferirPalpite(Jogador *jogadorAtual, int idAssassino, int idArma, int idL
 
         comando = 0;
         while (comando != 1) {
-            printf("Digite '1' para encerrar o turno: \n");
+            printf("\nDigite '1' para encerrar o turno: \n");
             scanf("%d",&comando);
         }
         clearScreen();
@@ -344,7 +348,7 @@ Espaco *buscaEspaco(Espaco *espaco, int id) {
     return NULL;
 }
 
-void iniciarCartas(Jogador *jogadorHead, Jogador *jogadorTail) {
+void iniciarCartas(Jogador *jogadorHead, Jogador *jogadorTail, Carta final[3]) {
     FILE* arquivo = fopen("cartas.txt", "r");
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo de cartas.\n");
@@ -354,9 +358,9 @@ void iniciarCartas(Jogador *jogadorHead, Jogador *jogadorTail) {
     char buffer[100];
     int id = 0;
     Carta cartas[23];
-    Carta final[3];
 
     while (fgets(buffer, 100, arquivo) != NULL && id < 23) {
+        buffer[strcspn(buffer, "\n")] = 0; 
         cartas[id].id = id;
         strcpy(cartas[id].nome, buffer);
         id++;
@@ -590,6 +594,7 @@ int moverJogador(Jogador *jogador, int sentido, int qtdMovimentos) {
 void imprimirCartasJogador(Jogador *jogador) {
     for (int i = 0; i < 5; i++) {
             printColor(GREEN, jogador->cartas[i].nome);
+            printf("\n");
         }
         printf("\n");
 };
