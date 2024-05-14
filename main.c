@@ -49,10 +49,11 @@ void mostrarMenuPrevio();
 void clearScreen();
 void lerRegras();
 int jogarDado();
-void moverJogador(Jogador *jogador, int resultadoDado);
+int moverJogador(Jogador *jogador, int sentido, int qtdMovimentos);
 Espaco *buscaEspaco(Espaco *espaco, int id);
 void mostrarMenu(Jogador *jogadorAtual, Espaco *tabuleiroHead);
 void imprimirCartasJogador(Jogador *jogador);
+void mostrarMenuDeMovimento(Jogador *jogadorAtual, Espaco *tabuleiroHead, int qtdMovimentos);
 
 int main() {
     srand(time(NULL));
@@ -101,6 +102,7 @@ void loopJogo() {
 
     int comando = 0;
     Jogador *jogadorAtual = jogadorHead;
+    int turnoConfirmed = 0;
 
     while(1) {
         printf("Turno do Jogador %d\n", jogadorAtual->id + 1);
@@ -112,14 +114,66 @@ void loopJogo() {
         clearScreen();
 
         mostrarMenu(jogadorAtual, tabuleiroHead);
+
+        scanf("%d",&comando);
+        clearScreen();
         
-
-
-
-        sleep(10000);
+        switch (comando) {
+            case 1:
+                int resultadoDado = jogarDado();
+                printf("\n\nO resultado do dado foi %d", resultadoDado);
+                comando = 0;
+                int qtdMovimentos = resultadoDado;
+                while (comando != 1) {
+                    printf("\n\nDigite '1' para se locomover:");
+                    printf("\n");
+                    scanf("%d", &comando);
+                }
+                clearScreen();
+                while (qtdMovimentos > 0) {
+                    mostrarMenuDeMovimento(jogadorAtual,tabuleiroHead,qtdMovimentos);
+                    scanf("%d",&comando);
+                    clearScreen();
+                    qtdMovimentos = moverJogador(jogadorAtual,comando,qtdMovimentos);
+                }
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            case 4:
+                break;
+            case 5:
+                break;
+            default:
+                while (comando != 1) {
+                    printf("\nComando Inválido. Digite '1' para voltar ao menu:");
+                    printf("\n");
+                    scanf("%d", &comando);
+                }
+                turnoConfirmed = 0;
+                break;
+            }
     }
 
 
+}
+
+void mostrarMenuDeMovimento(Jogador *jogadorAtual, Espaco *tabuleiroHead, int qtdMovimentos) {
+    printf("Tabuleiro:");
+    imprimirTabuleiroByLocal(tabuleiroHead);
+
+    if (strcmp(jogadorAtual->espaco->local,"\0") != 0)
+        printf("\nVocê está no(a) %s\n",jogadorAtual->espaco->local);
+    else
+        printf("\nVocê está no espaço %d\n",jogadorAtual->espaco->id);
+
+    printf("\nMovimentos restantes: %d\n", qtdMovimentos);
+
+    printf("\nDigite o que você deseja fazer: \n");
+    printf("1. Mover para a esquerda\n");
+    printf("2. Mover para a direita\n");
+    printf("3. Parar\n");
 }
 
 void mostrarMenu(Jogador *jogadorAtual, Espaco *tabuleiroHead) {
@@ -139,9 +193,9 @@ void mostrarMenu(Jogador *jogadorAtual, Espaco *tabuleiroHead) {
     if (jogadorAtual->espaco != NULL)
         printf("2. Fazer Palpite\n");
     if (jogadorAtual->espaco->id == 0)
-        printf("3. Ir para Ponto de Ônibus");
-    if (jogadorAtual->espaco->id == 0)
-        printf("4. Ir para Metrô");
+        printf("3. Ir para Ponto de Ônibus\n");
+    if (jogadorAtual->espaco->id == 34)
+        printf("4. Ir para Metrô\n");
     if (jogadorAtual->espaco->id == 18)
         printf("5. Fazer Palpite Final\n");
 
@@ -218,7 +272,7 @@ void *iniciarJogadores(Jogador **head, Jogador **tail, Espaco *espaco) {
 
 Espaco *iniciarTabuleiro() {
     Espaco *espaco = NULL;
-    for (int i = 29; i >= 0; i--) {
+    for (int i = 34; i >= 0; i--) {
         inserirEspaco(&espaco, i);
         switch (espaco->id){
             case 0:
@@ -355,14 +409,31 @@ void lerRegras() {
 }
 
 int jogarDado() {
-    return rand() % 6 + 1; // Gera um número entre 1 e 6
+    printf("Jogando o dado...");
+    sleep(2);
+    
+    //return rand() % 6 + 1; // Gera um número entre 1 e 6
+
+    return 20;
 }
 
-void moverJogador(Jogador *jogador, int resultadoDado) {
-    for (int i = 0; i < resultadoDado; i++) {
-        jogador->espaco = jogador->espaco->prox;
+int moverJogador(Jogador *jogador, int sentido, int qtdMovimentos) {
+    if (sentido == 1) {
+        if (jogador->espaco->id != 0) {
+            jogador->espaco = jogador->espaco->ant;
+            qtdMovimentos--;
+        }
     }
-    printf("Jogador %d moveu para %s\n", jogador->id, jogador->espaco->local);
+    if (sentido == 2) {
+        if (jogador->espaco->id != 34) {
+            jogador->espaco = jogador->espaco->prox;
+            qtdMovimentos--;
+        }
+    }
+    if (sentido == 3) {
+        qtdMovimentos = 0;
+    }
+    return qtdMovimentos;
 }
 
 void imprimirCartasJogador(Jogador *jogador) {
