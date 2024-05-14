@@ -57,8 +57,10 @@ void imprimirCartasJogador(Jogador *jogador);
 void mostrarMenuDeMovimento(Jogador *jogadorAtual, Espaco *tabuleiroHead, int qtdMovimentos);
 void printAssassinos();
 void printArmas();
+void printLocais();
 int idPalpiteLocal(Espaco *espaco);
 void conferirPalpite(Jogador *jogadorAtual, int idAssassino, int idArma, int idLocal);
+int conferirPalpiteFinal(Jogador *jogadorAtual, int idAssassino, int idArma, int idLocal, Carta final[]);
 
 int main() {
     srand(time(NULL));
@@ -99,6 +101,9 @@ void loopJogo() {
     Carta final[3];
     iniciarCartas(jogadorHead, jogadorTail, final);
 
+    //printf("%s %s %s", final[0].nome, final[1].nome, final[2].nome);
+    //sleep(4);
+
     clearScreen();
 
     printf("Iniciando Jogo...\n");
@@ -109,11 +114,13 @@ void loopJogo() {
     int comando = 0;
     Jogador *jogadorAtual = jogadorHead;
     int turnoConfirmed = 0;
+    int fimJogo = 0;
 
     while(1) {
+        comando = 0;
         printf("Turno do Jogador %d\n", jogadorAtual->id + 1);
         while (comando != 1) {
-            printf("\nDigite '1' para continuar:");
+            printf("\nDigite '1' para começar:");
             printf("\n");
             scanf("%d", &comando);
         }
@@ -203,6 +210,36 @@ void loopJogo() {
                 }
                 break;
             case 5:
+                if (jogadorAtual->espaco->id == 18) {
+                    int palpiteAssassino, palpiteArma, palpiteLocal;
+                    printf(RED"Faça seu Palpite final.\n\n"RESET);
+                    printAssassinos();
+                    printf("\nDigite o assassino que você quer palpitar:\n");
+                    scanf("%d",&palpiteAssassino);
+                    palpiteAssassino -= 1; //Correção de id
+                    clearScreen();
+
+                    printf(RED"Faça seu Palpite Final.\n\n"RESET);
+                    printArmas();
+                    printf("\nDigite a arma que você quer palpitar:\n");
+                    scanf("%d",&palpiteArma);
+                    palpiteArma += 7; //Correção de id
+                    clearScreen();
+
+                    printf(RED"Faça seu Palpite Final.\n\n"RESET);
+                    printLocais();
+                    printf("\nDigite o local que você quer palpitar:\n");
+                    scanf("%d",&palpiteLocal);
+                    palpiteLocal += 14; //Correção de id
+                    clearScreen();
+
+                    fimJogo = conferirPalpiteFinal(jogadorAtual, palpiteAssassino, palpiteArma, palpiteLocal, final);
+
+                    if (fimJogo == 0)
+                        //Função de Inserir Jogador
+                    
+                    turnoConfirmed = 1;
+                } else turnoConfirmed = 0;
                 break;
             default:
                 while (comando != 1) {
@@ -213,9 +250,42 @@ void loopJogo() {
                 turnoConfirmed = 0;
                 break;
             }
-
-
+        
+        if (fimJogo ==  1) {
+            printf(YELLOW"FIM DE JOGO.\n\nGANHADOR: JOGADOR %d"RESET, (jogadorAtual->id + 1));
+            break;
+        }
+        
+        if (turnoConfirmed == 1) {
+            jogadorAtual = jogadorAtual->prox;
+            turnoConfirmed = 0;
+        }
     }
+}
+
+int conferirPalpiteFinal(Jogador *jogadorAtual, int idAssassino, int idArma, int idLocal, Carta final[]) {
+    Jogador *aux = jogadorAtual->prox;  
+    int c = 0;  
+
+
+    for (int i = 0; i < 3; i++) {
+        if (final[i].id == idAssassino || final[i].id == idArma || final[i].id == idLocal) {
+            c++;
+        }
+    }
+
+    clearScreen();
+
+    printf("Conferindo palpite final...");
+    sleep(7);
+
+    clearScreen();
+
+    if (c == 3) 
+        return 1;
+    else 
+        return 0;
+    
 }
 
 void conferirPalpite(Jogador *jogadorAtual, int idAssassino, int idArma, int idLocal) {
@@ -250,7 +320,7 @@ void conferirPalpite(Jogador *jogadorAtual, int idAssassino, int idArma, int idL
         printf("Nenhum palpite foi confirmado.\n");
         int comando = 0;
         while (comando != 1) {
-                    printf("Digite '1' para começar\n");
+                    printf("Digite '1' para continuar\n");
                     printf("\n");
                     scanf("%d", &comando);
                 }
@@ -567,9 +637,9 @@ int jogarDado() {
     printf("Jogando o dado...");
     sleep(2);
     
-    //return rand() % 6 + 1; // Gera um número entre 1 e 6
+    return rand() % 6 + 1; // Gera um número entre 1 e 6
 
-    return 20;
+    //return 20;
 }
 
 int moverJogador(Jogador *jogador, int sentido, int qtdMovimentos) {
@@ -632,6 +702,28 @@ void printArmas() {
 
     while (fgets(buffer, 100, arquivo) != NULL && id < 15) {
         if (id > 7) {
+            printf(GREEN"%d. %s"RESET,c,buffer);
+            c++;
+        }
+        id++; 
+    }
+    fclose(arquivo);
+}
+
+void printLocais() {
+    FILE* arquivo = fopen("cartas.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo de cartas.\n");
+        return;
+    }
+
+    char buffer[100];
+    int id = 0;
+    int c = 1;
+    Carta cartas[20];
+
+    while (fgets(buffer, 100, arquivo) != NULL && id < 23) {
+        if (id > 14) {
             printf(GREEN"%d. %s"RESET,c,buffer);
             c++;
         }
