@@ -158,7 +158,7 @@ void loopJogo() {
                     printArmas();
                     printf("\nDigite a arma que você quer palpitar:\n");
                     scanf("%d",&palpiteArma);
-                    palpiteArma += 5; //Correção de id
+                    palpiteArma += 7; //Correção de id
                     clearScreen();
 
                     palpiteLocal = idPalpiteLocal(jogadorAtual->espaco);
@@ -352,21 +352,37 @@ void iniciarCartas(Jogador *jogadorHead, Jogador *jogadorTail) {
 
     char buffer[100];
     int id = 0;
-    Carta cartas[20];
+    Carta cartas[23];
+    Carta final[3];
 
-    while (fgets(buffer, 100, arquivo) != NULL && id < 20) {
+    while (fgets(buffer, 100, arquivo) != NULL && id < 23) {
         cartas[id].id = id;
         strcpy(cartas[id].nome, buffer);
         id++;
     }
     fclose(arquivo);
 
+    int r1 = rand() % 8; // Assassino
+    final[0] = cartas[r1];
+    strcpy(cartas[r1].nome, "");
+
+    int r2 = rand() % 7 + 8; // Arma
+    final[1] = cartas[r2];
+    strcpy(cartas[r2].nome, "");
+
+    int r3 = (rand() % 8) + 15; // Local
+    final[2] = cartas[r3];
+    strcpy(cartas[r3].nome, "");
+
+
+
+
     Jogador *aux = jogadorHead;
 
     do {
         int countDeck = 0;
         while (countDeck < 5) {
-            int random = rand() % 20;
+            int random = rand() % 23;
 
             if (strlen(cartas[random].nome) != 0) {
                 aux->cartas[countDeck] = cartas[random];
@@ -589,7 +605,7 @@ void printAssassinos() {
     int c = 1;
     Carta cartas[20];
 
-    while (fgets(buffer, 100, arquivo) != NULL && id < 6) {
+    while (fgets(buffer, 100, arquivo) != NULL && id < 8) {
         printf(GREEN"%d. %s"RESET,c,buffer);
         id++; c++;
     }
@@ -608,8 +624,8 @@ void printArmas() {
     int c = 1;
     Carta cartas[20];
 
-    while (fgets(buffer, 100, arquivo) != NULL && id < 12) {
-        if (id > 5) {
+    while (fgets(buffer, 100, arquivo) != NULL && id < 15) {
+        if (id > 7) {
             printf(GREEN"%d. %s"RESET,c,buffer);
             c++;
         }
@@ -628,8 +644,10 @@ int idPalpiteLocal(Espaco *espaco) {
     char buffer[100];
     int id = 0;
 
-    while (fgets(buffer, 100, arquivo) != NULL && id < 20) {
-        if (id > 11) {
+    while (fgets(buffer, 100, arquivo) != NULL && id < 23) {
+        if (id > 15) {
+             buffer[strcspn(buffer, "\n")] = 0;
+            
             if (strcmp(espaco->local,buffer) == 0) {
                 break;
             }

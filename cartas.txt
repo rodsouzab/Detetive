@@ -4,12 +4,15 @@ Professor
 Médico
 Advogado
 Delegado
+Bombeiro
+Mecânico
 Faca
 Pé-de-cabra
 Espada
 Veneno
 Martelo
 Arma de Fogo
+Canivete
 Metrô
 Mansão
 Prefeitura
