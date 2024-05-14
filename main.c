@@ -36,6 +36,7 @@ typedef struct Jogador {
     Carta cartas[5];
 } Jogador;
 
+void loopJogo();
 Espaco *iniciarTabuleiro();
 void *iniciarJogadores(Jogador **head, Jogador **tail, Espaco *espaco);
 void inserirEspaco(Espaco **espaco, int id);
@@ -57,11 +58,12 @@ int main() {
 
     int comando = 0;
 
-    while (comando != 1) {
+    while (1) {
         mostrarMenuPrevio();
         scanf("%d", &comando);
         switch (comando) {
             case 1:
+                loopJogo();
                 break;
             case 2:
                 lerRegras();
@@ -77,6 +79,10 @@ int main() {
         }
     }
 
+
+}
+
+void loopJogo() {
     Espaco *tabuleiroHead = iniciarTabuleiro();
     Espaco *espacoInicial = buscaEspaco(tabuleiroHead, 18);
     Jogador *jogadorHead = NULL;
@@ -96,6 +102,11 @@ int main() {
     clearScreen();
 
     imprimirJogadoresbyLocal(jogadorHead,jogadorTail);
+
+    while(1) {
+        // Inserir loop de jogo
+    }
+
 
 }
 
@@ -242,7 +253,7 @@ void imprimirJogadoresbyLocal(Jogador *head, Jogador *tail) {
         printf("%d\t%s\t\t", current->id, current->espaco->local);
         for (int i = 0; i < 5; i++) {
             printColor(GREEN, current->cartas[i].nome);
-            if (i < 4) printf(", ");
+            printf("\t\t\t");
         }
         printf("\n");
         current = current->prox;
