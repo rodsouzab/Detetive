@@ -34,6 +34,7 @@ typedef struct Jogador {
     struct Jogador *prox;
     Espaco *espaco;
     Carta cartas[5];
+    Espaco *ultimoPalpite;
 } Jogador;
 
 void loopJogo();
@@ -97,6 +98,7 @@ void loopJogo() {
     iniciarJogadores(&jogadorHead,&jogadorTail,espacoInicial);
     iniciarCartas(jogadorHead, jogadorTail);
 
+
     clearScreen();
 
     printf("Iniciando Jogo...\n");
@@ -143,7 +145,7 @@ void loopJogo() {
                 turnoConfirmed = 1;
                 break;
             case 2:
-                if (strcmp(jogadorAtual->espaco->local, "/0") != 0) {
+                if (strcmp(jogadorAtual->espaco->local, "/0") != 0 && jogadorAtual->ultimoPalpite != jogadorAtual->espaco) {
                     int palpiteAssassino, palpiteArma, palpiteLocal;
                     printf(RED"Faça seu Palpite.\n\n"RESET);
                     printAssassinos();
@@ -162,6 +164,8 @@ void loopJogo() {
                     palpiteLocal = idPalpiteLocal(jogadorAtual->espaco);
 
                     conferirPalpite(jogadorAtual, palpiteAssassino, palpiteArma, palpiteLocal);
+
+                    jogadorAtual->ultimoPalpite = jogadorAtual->espaco;
 
                     turnoConfirmed = 1;
                 } else turnoConfirmed = 0;
@@ -319,7 +323,7 @@ void mostrarMenu(Jogador *jogadorAtual, Espaco *tabuleiroHead) {
 
     printf("\nDigite o que você deseja fazer: \n");
     printf("1. Jogar Dado\n");
-    if (strcmp(jogadorAtual->espaco->local,"\0") != 0)
+    if (strcmp(jogadorAtual->espaco->local,"\0") != 0 && jogadorAtual->ultimoPalpite != jogadorAtual->espaco)
         printf("2. Fazer Palpite\n");
     if (jogadorAtual->espaco->id == 0)
         printf("3. Ir para Ponto de Ônibus\n");
@@ -441,6 +445,7 @@ void inserirJogador(Jogador **head, Jogador **tail, int id, Espaco *espaco) {
   if (novo != NULL) {
     novo->id = id;
     novo->espaco = espaco;
+    novo->ultimoPalpite = espaco;
     if (*head == NULL) {
       *head = *tail = novo;
     } else {
