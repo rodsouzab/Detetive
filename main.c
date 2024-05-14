@@ -123,10 +123,11 @@ void loopJogo() {
 
         scanf("%d",&comando);
         clearScreen();
-        
+        int resultadoDado; 
         switch (comando) {
             case 1:
-                int resultadoDado = jogarDado();
+                
+                resultadoDado = jogarDado();
                 printf("\n\nO resultado do dado foi %d", resultadoDado);
                 comando = 0;
                 int qtdMovimentos = resultadoDado;
