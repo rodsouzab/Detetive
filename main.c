@@ -54,6 +54,10 @@ Espaco *buscaEspaco(Espaco *espaco, int id);
 void mostrarMenu(Jogador *jogadorAtual, Espaco *tabuleiroHead);
 void imprimirCartasJogador(Jogador *jogador);
 void mostrarMenuDeMovimento(Jogador *jogadorAtual, Espaco *tabuleiroHead, int qtdMovimentos);
+void printAssassinos();
+void printArmas();
+int idPalpiteLocal(Espaco *espaco);
+void conferirPalpite(Jogador *jogadorAtual, int idAssassino, int idArma, int idLocal);
 
 int main() {
     srand(time(NULL));
@@ -139,6 +143,28 @@ void loopJogo() {
                 turnoConfirmed = 1;
                 break;
             case 2:
+                if (strcmp(jogadorAtual->espaco->local, "/0") != 0) {
+                    int palpiteAssassino, palpiteArma, palpiteLocal;
+                    printf(RED"Faça seu Palpite.\n\n"RESET);
+                    printAssassinos();
+                    printf("\nDigite o assassino que você quer palpitar:\n");
+                    scanf("%d",&palpiteAssassino);
+                    palpiteAssassino -= 1; //Correção de id
+                    clearScreen();
+
+                    printf(RED"Faça seu Palpite.\n\n"RESET);
+                    printArmas();
+                    printf("\nDigite a arma que você quer palpitar:\n");
+                    scanf("%d",&palpiteArma);
+                    palpiteArma += 5; //Correção de id
+                    clearScreen();
+
+                    palpiteLocal = idPalpiteLocal(jogadorAtual->espaco);
+
+                    conferirPalpite(jogadorAtual, palpiteAssassino, palpiteArma, palpiteLocal);
+
+                    turnoConfirmed = 1;
+                } else turnoConfirmed = 0;
                 break;
             case 3:
                 if (jogadorAtual->espaco->id == 0) {
@@ -183,10 +209,84 @@ void loopJogo() {
                 turnoConfirmed = 0;
                 break;
             }
+
+
+    }
+}
+
+void conferirPalpite(Jogador *jogadorAtual, int idAssassino, int idArma, int idLocal) {
+    Jogador *aux = jogadorAtual->prox;  
+    Carta palpitesEncontrados[3];  
+    int c = 0;  
+
+    while (aux != jogadorAtual) {
+        for (int i = 0; i < 5; i++) {
+            if (aux->cartas[i].id == idAssassino || aux->cartas[i].id == idArma || aux->cartas[i].id == idLocal) {
+                palpitesEncontrados[c] = aux->cartas[i];
+                c++;
+                if (c == 3) {
+                    break;
+                }
+            }
+        }
+        if (c > 0) {
+            break;
+        }
+        aux = aux->prox;  
     }
 
+    clearScreen();
 
+    if (c == 0) {
+        printf("Nenhum palpite foi confirmado.\n");
+        int comando = 0;
+        while (comando != 1) {
+                    printf("Digite '1' para continuar\n");
+                    printf("\n");
+                    scanf("%d", &comando);
+                }
+        clearScreen();
+        return;
+    } else {
+        printf(RED"O palpite foi encontrado pelo jogador %d\n\n"RESET,aux->id + 1);
+        int comando = 0;
+        while (comando != 1) {
+                    printf("(Jogador %d) Digite '1' para selecionar a carta que vai ser mostrada ao Jogador %d\n",(aux->id)+1, (jogadorAtual->id)+1);
+                    printf("\n");
+                    scanf("%d", &comando);
+                }
+        clearScreen();
+        
+
+        for (int i = 0; i < c; i++) 
+            printf(GREEN"%d. %s"RESET, i + 1, palpitesEncontrados[i].nome);
+            
+
+        int escolha = 0;
+        while (escolha < 1 || escolha > c) {
+            printf("Selecione que carta mostrar ao Jogador %d:\n",(jogadorAtual->id)+1);
+            scanf("%d",&escolha);
+        }
+        clearScreen();
+
+        comando = 0;
+        while (comando != 1) {
+            printf(" (Jogador %d) Carta selecionada. Digite '1' para vizualizá-la:\n", (jogadorAtual->id)+1);
+            scanf("%d",&comando);
+        }
+        clearScreen();
+
+        printf("Carta Selecionada: "GREEN"%s\n"RESET,palpitesEncontrados[escolha-1].nome);
+
+        comando = 0;
+        while (comando != 1) {
+            printf("Digite '1' para encerrar o turno: \n");
+            scanf("%d",&comando);
+        }
+        clearScreen();
+    }
 }
+
 
 void mostrarMenuDeMovimento(Jogador *jogadorAtual, Espaco *tabuleiroHead, int qtdMovimentos) {
     printf("Tabuleiro:");
@@ -471,3 +571,67 @@ void imprimirCartasJogador(Jogador *jogador) {
         }
         printf("\n");
 };
+
+void printAssassinos() {
+    FILE* arquivo = fopen("cartas.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo de cartas.\n");
+        return;
+    }
+
+    char buffer[100];
+    int id = 0;
+    int c = 1;
+    Carta cartas[20];
+
+    while (fgets(buffer, 100, arquivo) != NULL && id < 6) {
+        printf(GREEN"%d. %s"RESET,c,buffer);
+        id++; c++;
+    }
+    fclose(arquivo);
+}
+
+void printArmas() {
+    FILE* arquivo = fopen("cartas.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo de cartas.\n");
+        return;
+    }
+
+    char buffer[100];
+    int id = 0;
+    int c = 1;
+    Carta cartas[20];
+
+    while (fgets(buffer, 100, arquivo) != NULL && id < 12) {
+        if (id > 5) {
+            printf(GREEN"%d. %s"RESET,c,buffer);
+            c++;
+        }
+        id++; 
+    }
+    fclose(arquivo);
+}
+
+int idPalpiteLocal(Espaco *espaco) {
+    FILE* arquivo = fopen("cartas.txt", "r");
+    if (arquivo == NULL) {
+        printf("Erro ao abrir o arquivo de cartas.\n");
+        exit(0);
+    }
+
+    char buffer[100];
+    int id = 0;
+
+    while (fgets(buffer, 100, arquivo) != NULL && id < 20) {
+        if (id > 11) {
+            if (strcmp(espaco->local,buffer) == 0) {
+                break;
+            }
+        }
+        id++; 
+    }
+    fclose(arquivo);
+    
+    return id;
+}
