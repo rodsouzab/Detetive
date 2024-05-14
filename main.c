@@ -51,6 +51,8 @@ void lerRegras();
 int jogarDado();
 void moverJogador(Jogador *jogador, int resultadoDado);
 Espaco *buscaEspaco(Espaco *espaco, int id);
+void mostrarMenu(Jogador *jogadorAtual, Espaco *tabuleiroHead);
+void imprimirCartasJogador(Jogador *jogador);
 
 int main() {
     srand(time(NULL));
@@ -92,21 +94,56 @@ void loopJogo() {
 
     clearScreen();
 
-    printf("Jogando o dado... \n");
-    int resultadoDado = jogarDado();
-    printf("Resultado do dado: %d\n", resultadoDado);
-
     printf("Iniciando Jogo...\n");
     sleep(4);
 
     clearScreen();
 
-    imprimirJogadoresbyLocal(jogadorHead,jogadorTail);
+    int comando = 0;
+    Jogador *jogadorAtual = jogadorHead;
 
     while(1) {
-        // Inserir loop de jogo
+        printf("Turno do Jogador %d\n", jogadorAtual->id + 1);
+        while (comando != 1) {
+            printf("\nDigite '1' para continuar:");
+            printf("\n");
+            scanf("%d", &comando);
+        }
+        clearScreen();
+
+        mostrarMenu(jogadorAtual, tabuleiroHead);
+        
+
+
+
+        sleep(10000);
     }
 
+
+}
+
+void mostrarMenu(Jogador *jogadorAtual, Espaco *tabuleiroHead) {
+    printf("Tabuleiro:");
+    imprimirTabuleiroByLocal(tabuleiroHead);
+
+    printf("\nSuas Cartas:\n");
+    imprimirCartasJogador(jogadorAtual);
+
+    if (strcmp(jogadorAtual->espaco->local,"\0") != 0)
+        printf("Você está no(a) %s\n",jogadorAtual->espaco->local);
+    else
+        printf("Você está no espaço %d\n",jogadorAtual->espaco->id);
+
+    printf("\nDigite o que você deseja fazer: \n");
+    printf("1. Jogar Dado\n");
+    if (jogadorAtual->espaco != NULL)
+        printf("2. Fazer Palpite\n");
+    if (jogadorAtual->espaco->id == 0)
+        printf("3. Ir para Ponto de Ônibus");
+    if (jogadorAtual->espaco->id == 0)
+        printf("4. Ir para Metrô");
+    if (jogadorAtual->espaco->id == 18)
+        printf("5. Fazer Palpite Final\n");
 
 }
 
@@ -265,13 +302,16 @@ void imprimirTabuleiroByLocal(Espaco *head) {
     Espaco *current = head;
     printf(CYAN "\n---------------------------------------------\n" RESET);
     while (current != NULL) {
-        printf("| " YELLOW "%s" RESET " ", current->local);
+        if (strcmp(current->local,"\0") != 0)
+            printf(YELLOW "%s" RESET, current->local);
+        else
+            printf("%d", current->id);
         current = current->prox;
         if (current != NULL) {
             printf(" <=> ");
         }
     }
-    printf("|\n---------------------------------------------\n");
+    printf(CYAN "\n---------------------------------------------\n" RESET);
 }
 
 void mostrarMenuPrevio() {
@@ -324,3 +364,10 @@ void moverJogador(Jogador *jogador, int resultadoDado) {
     }
     printf("Jogador %d moveu para %s\n", jogador->id, jogador->espaco->local);
 }
+
+void imprimirCartasJogador(Jogador *jogador) {
+    for (int i = 0; i < 5; i++) {
+            printColor(GREEN, jogador->cartas[i].nome);
+        }
+        printf("\n");
+};
