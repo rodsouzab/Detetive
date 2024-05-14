@@ -136,12 +136,41 @@ void loopJogo() {
                     clearScreen();
                     qtdMovimentos = moverJogador(jogadorAtual,comando,qtdMovimentos);
                 }
+                turnoConfirmed = 1;
                 break;
             case 2:
                 break;
             case 3:
+                if (jogadorAtual->espaco->id == 0) {
+                    Jogador *aux = jogadorAtual;
+                    while (aux->espaco->prox != NULL)
+                        aux->espaco = aux->espaco->prox;
+                    jogadorAtual->espaco = aux->espaco;
+                    turnoConfirmed = 1;
+                } else {
+                    while (comando != 1) {
+                    printf("\nComando Inválido. Digite '1' para voltar ao menu:");
+                    printf("\n");
+                    scanf("%d", &comando);
+                    }
+                    turnoConfirmed = 0;
+                }
                 break;
             case 4:
+                if (jogadorAtual->espaco->id == 34) {
+                    Jogador *aux = jogadorAtual;
+                    while (aux->espaco->ant != NULL)
+                        aux->espaco = aux->espaco->ant;
+                    jogadorAtual->espaco = aux->espaco;
+                    turnoConfirmed = 1;
+                } else {
+                    while (comando != 1) {
+                    printf("\nComando Inválido. Digite '1' para voltar ao menu:");
+                    printf("\n");
+                    scanf("%d", &comando);
+                    }
+                    turnoConfirmed = 0;
+                }
                 break;
             case 5:
                 break;
@@ -190,7 +219,7 @@ void mostrarMenu(Jogador *jogadorAtual, Espaco *tabuleiroHead) {
 
     printf("\nDigite o que você deseja fazer: \n");
     printf("1. Jogar Dado\n");
-    if (jogadorAtual->espaco != NULL)
+    if (strcmp(jogadorAtual->espaco->local,"\0") != 0)
         printf("2. Fazer Palpite\n");
     if (jogadorAtual->espaco->id == 0)
         printf("3. Ir para Ponto de Ônibus\n");
