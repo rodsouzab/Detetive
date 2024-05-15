@@ -666,7 +666,7 @@ void clearScreen() {
 }
 
 void lerRegras() {
-    FILE *arquivo = fopen("/home/thiago/Área de Trabalho/DetetiveAED/regras.txt", "r");
+    FILE *arquivo = fopen("regras.txt", "r");
     if (arquivo == NULL) {
         printf("Erro ao abrir o arquivo de regras.\n");
         return;
