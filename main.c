@@ -62,6 +62,7 @@ int idPalpiteLocal(Espaco *espaco);
 void conferirPalpite(Jogador *jogadorAtual, int idAssassino, int idArma, int idLocal);
 int conferirPalpiteFinal(Jogador *jogadorAtual, int idAssassino, int idArma, int idLocal, Carta final[]);
 void removerJogador(Jogador **jogadorHead, Jogador **jogadorTail, int id);
+void printCartas();
 
 int main() {
     srand(time(NULL));
@@ -121,6 +122,8 @@ void loopJogo() {
     while(1) {
         comando = 0;
         printf("Turno do Jogador %d\n", jogadorAtual->id);
+        //printf("Head: %d\nTail: %d\n", jogadorHead->id, jogadorTail->id);
+        //printf("%s %s %s\n", final[0].nome, final[1].nome, final[2].nome);
         while (comando != 1) {
             printf("\nDigite '1' para começar:");
             printf("\n");
@@ -259,9 +262,12 @@ void loopJogo() {
                         idGanhador = jogadorHead->id;
                     }
                     
-                    
                     turnoConfirmed = 1;
                 } else turnoConfirmed = 0;
+                break;
+            case 6: 
+                printCartas();
+                turnoConfirmed = 0;
                 break;
             default:
                 while (comando != 1) {
@@ -275,6 +281,14 @@ void loopJogo() {
         
         if (fimJogo ==  1) {
             printf(YELLOW"FIM DE JOGO.\n\nGANHADOR: JOGADOR %d"RESET, idGanhador);
+            printf(YELLOW"\n\nO Crime foi cometido pelo %s, com um(a) %s no(a) %s\n\n"RESET, final[0].nome, final[1].nome, final[2].nome);
+            comando = 0;
+            while (comando != 1) {
+                printf("\nDigite '1' para continuar:");
+                printf("\n");
+                scanf("%d", &comando);
+            }
+            clearScreen();
             break;
         }
         
@@ -298,6 +312,9 @@ void removerJogador(Jogador **jogadorHead, Jogador **jogadorTail, int id) {
             while (aux2->prox != aux)
                 aux2 = aux2->prox;
             aux2->prox = aux->prox;
+            if (aux2->prox == aux2) {
+                *jogadorHead = *jogadorTail;
+            }
         }
     }
 }
@@ -359,7 +376,7 @@ void conferirPalpite(Jogador *jogadorAtual, int idAssassino, int idArma, int idL
         printf("Nenhum palpite foi confirmado.\n");
         int comando = 0;
         while (comando != 1) {
-                    printf("Digite '1' para continuar\n");
+                    printf("\nDigite '1' para continuar\n");
                     printf("\n");
                     scanf("%d", &comando);
                 }
@@ -445,6 +462,7 @@ void mostrarMenu(Jogador *jogadorAtual, Espaco *tabuleiroHead) {
         printf("4. Ir para Metrô\n");
     if (jogadorAtual->espaco->id == 18)
         printf("5. Fazer Palpite Final\n");
+    printf("6. Ver Todas as Cartas\n");
 
 }
 
@@ -794,4 +812,23 @@ int idPalpiteLocal(Espaco *espaco) {
     fclose(arquivo);
     
     return id;
+}
+
+void printCartas() {
+    printf("ASSASSINOS\n");
+    printAssassinos();
+    printf(GREEN"--------------------------\n"RESET);
+    printf("ARMAS\n");
+    printArmas();
+    printf(GREEN"\n--------------------------\n"RESET);
+    printf("LOCAIS\n");
+    printLocais();
+    printf("\n");
+    int comando = 0;
+    while (comando != 1) {
+        printf("\nDigite '1' para continuar:");
+        printf("\n");
+        scanf("%d", &comando);
+    }
+    clearScreen();
 }
