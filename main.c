@@ -61,6 +61,7 @@ void printLocais();
 int idPalpiteLocal(Espaco *espaco);
 void conferirPalpite(Jogador *jogadorAtual, int idAssassino, int idArma, int idLocal);
 int conferirPalpiteFinal(Jogador *jogadorAtual, int idAssassino, int idArma, int idLocal, Carta final[]);
+void removerJogador(Jogador **jogadorHead, Jogador **jogadorTail, int id);
 
 int main() {
     srand(time(NULL));
@@ -115,10 +116,11 @@ void loopJogo() {
     Jogador *jogadorAtual = jogadorHead;
     int turnoConfirmed = 0;
     int fimJogo = 0;
+    int idGanhador = 0;
 
     while(1) {
         comando = 0;
-        printf("Turno do Jogador %d\n", jogadorAtual->id + 1);
+        printf("Turno do Jogador %d\n", jogadorAtual->id);
         while (comando != 1) {
             printf("\nDigite '1' para começar:");
             printf("\n");
@@ -235,8 +237,28 @@ void loopJogo() {
 
                     fimJogo = conferirPalpiteFinal(jogadorAtual, palpiteAssassino, palpiteArma, palpiteLocal, final);
 
-                    if (fimJogo == 0)
-                        //Função de Inserir Jogador
+                    if (fimJogo == 0) {
+                        removerJogador(&jogadorHead, &jogadorTail, jogadorAtual->id);
+                        printf(RED"JOGADOR %d FOI ELIMINADO!\n\n"RESET, jogadorAtual->id);
+                        printf(RED"SUAS CARTAS ERAM:\n"RESET);
+                        imprimirCartasJogador(jogadorAtual);
+                        comando = 0;
+                        while (comando != 1) {
+                            printf("\nDigite '1' para continuar:");
+                            printf("\n");
+                            scanf("%d", &comando);
+                        }
+                        clearScreen();
+                    }
+
+                    if (fimJogo == 1)
+                        idGanhador = jogadorAtual->id;
+                        
+                    if (jogadorHead->id == jogadorTail->id) {
+                        fimJogo = 1;
+                        idGanhador = jogadorHead->id;
+                    }
+                    
                     
                     turnoConfirmed = 1;
                 } else turnoConfirmed = 0;
@@ -252,13 +274,30 @@ void loopJogo() {
             }
         
         if (fimJogo ==  1) {
-            printf(YELLOW"FIM DE JOGO.\n\nGANHADOR: JOGADOR %d"RESET, (jogadorAtual->id + 1));
+            printf(YELLOW"FIM DE JOGO.\n\nGANHADOR: JOGADOR %d"RESET, idGanhador);
             break;
         }
         
         if (turnoConfirmed == 1) {
             jogadorAtual = jogadorAtual->prox;
             turnoConfirmed = 0;
+        }
+    }
+}
+
+void removerJogador(Jogador **jogadorHead, Jogador **jogadorTail, int id) {
+    if (*jogadorHead != NULL) {
+        Jogador *aux = *jogadorHead;
+        while (aux->id != id)
+            aux = aux->prox;
+        if (aux == *jogadorHead) {
+            *jogadorHead = (*jogadorHead)->prox;
+            (*jogadorTail)->prox = *jogadorHead;
+        } else {
+            Jogador *aux2 = *jogadorHead;
+            while (aux2->prox != aux)
+                aux2 = aux2->prox;
+            aux2->prox = aux->prox;
         }
     }
 }
@@ -327,10 +366,10 @@ void conferirPalpite(Jogador *jogadorAtual, int idAssassino, int idArma, int idL
         clearScreen();
         return;
     } else {
-        printf(RED"O palpite foi encontrado pelo jogador %d\n\n"RESET,aux->id + 1);
+        printf(RED"O palpite foi encontrado pelo jogador %d\n\n"RESET,aux->id);
         int comando = 0;
         while (comando != 1) {
-                    printf("(Jogador %d) Digite '1' para selecionar a carta que vai ser mostrada ao Jogador %d\n",(aux->id)+1, (jogadorAtual->id)+1);
+                    printf("(Jogador %d) Digite '1' para selecionar a carta que vai ser mostrada ao Jogador %d\n",(aux->id), (jogadorAtual->id));
                     printf("\n");
                     scanf("%d", &comando);
                 }
@@ -343,14 +382,14 @@ void conferirPalpite(Jogador *jogadorAtual, int idAssassino, int idArma, int idL
 
         int escolha = 0;
         while (escolha < 1 || escolha > c) {
-            printf("\n\nSelecione que carta mostrar ao Jogador %d:\n",(jogadorAtual->id)+1);
+            printf("\n\nSelecione que carta mostrar ao Jogador %d:\n",(jogadorAtual->id));
             scanf("%d",&escolha);
         }
         clearScreen();
 
         comando = 0;
         while (comando != 1) {
-            printf(" (Jogador %d) Carta selecionada. Digite '1' para vizualizá-la:\n", (jogadorAtual->id)+1);
+            printf(" (Jogador %d) Carta selecionada. Digite '1' para vizualizá-la:\n", (jogadorAtual->id));
             scanf("%d",&comando);
         }
         clearScreen();
@@ -489,7 +528,7 @@ void bubbleSort(Jogador *jogadorHead, Jogador *jogadorTail) {
 }
 
 void *iniciarJogadores(Jogador **head, Jogador **tail, Espaco *espaco) {
-    for (int i = 3; i >= 0; i--) {
+    for (int i = 4; i >= 1; i--) {
         inserirJogador(&(*head), &(*tail), i, espaco);
     }
 }
