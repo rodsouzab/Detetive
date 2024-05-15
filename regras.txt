@@ -17,14 +17,17 @@ Armas: Faca, Pé-de-cabra, Espada, Veneno, Martelo, Arma de Fogo, Canivete.
 Locais: Metrô, Mansão, Prefeitura, Parque, Praia, Escola, Ponte, Ponto de Ônibus.
 
 Regras do Jogo
+
 Distribuição das Cartas:
 
 As cartas de personagens, armas e locais são embaralhadas e distribuídas entre os jogadores.
 Uma carta de cada categoria é selecionada aleatoriamente e colocada em um envelope, representando o crime a ser solucionado.
+
 Movimento no Tabuleiro:
 
 Os jogadores se locomovem pelo tabuleiro até chegarem a diferentes locais.
 Em cada local, o jogador pode fazer um palpite sobre o crime, escolhendo um personagem, uma arma e um local.
+
 Palpites:
 
 Após um jogador fazer um palpite, os outros jogadores verificam se possuem alguma das cartas mencionadas no palpite.
