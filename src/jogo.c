@@ -254,8 +254,10 @@ void conferirPalpite(Jogador *jogadorAtual, int idAssassino, int idArma, int idL
         clearScreen();
         
 
-        for (int i = 0; i < c; i++) 
+        for (int i = 0; i < c; i++) {
             printf(GREEN"%d. %s"RESET, i + 1, palpitesEncontrados[i].nome);
+            printf("\n");
+        }
             
 
         int escolha = 0;
